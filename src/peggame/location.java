@@ -7,7 +7,7 @@ public class location {
     private int rowSize;
     private int colSize;
 
-    public location(int row, int col, int rowSize, int colSize) {
+    public location(int row, int col, int rowSize, int i) {
         this.row = row;
         this.col = col;
         this.rowSize = rowSize;

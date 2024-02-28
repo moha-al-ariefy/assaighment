@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public interface peggame {
 
-    Collection<Move> getPossibleMoves();
+    public Collection<Move> getPossibleMoves(Player player);
 
   
     GameState getGameState();
