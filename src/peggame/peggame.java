@@ -28,4 +28,7 @@ public interface PegGame {
      * I will think about this later
      */
     String toString();
+
+    void switchPlayer();
+
 }
