@@ -1,33 +1,20 @@
 package peggame;
 
-import java.util.Collection;
-
-public class Move  {
-    private location start;
-    private location end;
-    private Board board;
-
-    public Move(location start, location end, Board board) {
-        this.start = start;
-        this.end = end;
-        this.board = board;
+public class Move {
+    private final Location from;
+    public Location getFrom() {
+        return from;
     }
 
-    public location getStart() {
-        return start;
+    public Location getTo() {
+        return to;
     }
 
-    public location getEnd() {
-        return end;
+    private final Location to;
+
+    public Move(Location from, Location to) {
+        this.from = from;
+        this.to = to;
     }
 
-    public void execute() {
-        int midRow = (start.getRow() + end.getRow()) / 2;
-        int midCol = (start.getCol() + end.getCol()) / 2;
-        location midLocation = new location(midRow, midCol, board.getRowSize(), board.getColSize());
-
-        board.removePeg(midLocation);
-    }
-
-    
 }
