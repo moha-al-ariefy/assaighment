@@ -8,7 +8,7 @@ public class CommandLineInterface {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println(game.toString());
-            System.out.print("Enter command(move or quit): ");
+            System.out.print("Enter command(move or quit) could move in all the sides: ");
             String command = scanner.nextLine();
             String[] parts = command.split(" ");
 
@@ -42,7 +42,7 @@ public class CommandLineInterface {
     }
 
     public static void main(String[] args) {
-        PegGame game = new Zasquare(5); // You can replace this with any other implementation of PegGame
+        PegGame game = new Zasquare(5);
         playGame(game);
     }
 }

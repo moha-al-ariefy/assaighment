@@ -90,18 +90,22 @@ public gamestate getgGamestate() {
 
 
 
-    @Override
+@Override
 public void makeMove(move move) throws PegGameException {
-    location from = move.getFrom();
-    location to = move.getTo();
+  location from = move.getFrom();
+  location to = move.getTo();
 
-    if (board[from.getRow()][from.getCol()] != 1 || board[to.getRow()][to.getCol()] != 0) {
-        throw new PegGameException("Invalid move");
-    }
+  if (board[from.getRow()][from.getCol()] != 1 || board[to.getRow()][to.getCol()] != 0) {
+    throw new PegGameException("Invalid move");
+  }
 
-    board[from.getRow()][from.getCol()] = 0; 
-    board[to.getRow()][to.getCol()] = 1; 
+  int jumpRow = from.getRow() + (to.getRow() - from.getRow()) / 2;
+  int jumpCol = from.getCol() + (to.getCol() - from.getCol()) / 2;
+  board[jumpRow][jumpCol] = 0; 
 
+  board[from.getRow()][from.getCol()] = 0; 
+  board[to.getRow()][to.getCol()] = 1; 
 }
+
 
 }
