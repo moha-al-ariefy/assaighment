@@ -1,32 +1,23 @@
 package peggame;
 
-public class Move {
-    private final Location from;
-    private final Location to;
+public class move {
+    location from;
+    location to;
 
-    public Move(Location from, Location to) {
+    public move(location from,location to){
         this.from = from;
         this.to = to;
     }
 
-    public Location getFrom() {
+    public location getFrom() {
         return from;
     }
-
-    public Location getTo() {
+    public location getTo() {
         return to;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Move move = (Move) o;
-        return from.equals(move.from) && to.equals(move.to);
+    public String toString(){
+        return "it will move from :"+from+" to :"+to;
+       }
     }
 
-    @Override
-    public String toString() {
-        return "Move{" + from + " -> " + to + '}';
-    }
-}

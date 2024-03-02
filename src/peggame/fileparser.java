@@ -1,27 +1,27 @@
 package peggame;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class fileparser {
+    public static PegGame parseFile(String filename) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        int size = Integer.parseInt(reader.readLine());
+        Zasquare game = new Zasquare(size);
 
-    public static PegGame parseFile(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            int rows = Integer.parseInt(reader.readLine());
-
-            char[][] board = new char[rows][];
-
-            for (int i = 0; i < rows; i++) {
-                board[i] = reader.readLine().toCharArray();
+        for (int i = 0; i < size; i++) {
+            String line = reader.readLine();
+            for (int j = 0; j < size; j++) {
+                game.board[i][j] = line.charAt(j) == 'o' ? 1 : 0;
             }
-
-            return new Zasquare(board);
         }
 
+        reader.close();
+        return game;
     }
-    
+
+    public static void testBoard(PegGame game){
+        System.out.println(game);
+    }
 }

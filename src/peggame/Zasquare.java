@@ -1,130 +1,107 @@
 package peggame;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Zasquare implements PegGame {
+    int[][] board;
+    private gamestate gameState;
 
-    private char[][] board;
-
-    public Zasquare(char[][] board) {
-        this.board = board;
+    public Zasquare(int size) {
+        this.board = new int[size][size];
+        this.gameState = gameState.IN_PROGRESS; // Assuming GameState is an enum you've defined elsewhere
     }
 
-    
-
-    @Override
-    public GameState getGameState() {
-        int pegCount = 0;
-        for (char[] row : board) {
-            for (char c : row) {
-                if (c == 'o') {
-                    pegCount++;
-                }
-            }
-        }
-
-        if (pegCount == 1) {
-            return GameState.WON;
-        } else if (getPossibleMoves().isEmpty()) {
-            return GameState.STALEMATE;
-        } else {
-            return GameState.IN_PROGRESS;
-        }
-    }
-    private char currentPlayer = 'o';  // 'o' for player 1 and 'O' for player 2
-    @Override
-    public List<Move> getPossibleMoves() {
-        List<Move> moves = new ArrayList<>();
-        for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board[row].length; col++) {
-                if (board[row][col] == currentPlayer) {
-                    moves.addAll(findValidMoves(new Location(row, col)));
-                }
-            }
-        }
-        return moves;
-    }
-    
-    private List<Move> findValidMoves(Location peg) {
-        List<Move> moves = new ArrayList<>();
-        int row = peg.getRow();
-        int col = peg.getCol();
-    
-        // Check jumps in all four directions
-        if (col < board[row].length - 2 && board[row][col + 1] != '.' && board[row][col + 2] == '.') {
-            moves.add(new Move(peg, new Location(row, col + 2)));
-        }
-        if (col > 1 && board[row][col - 1] != '.' && board[row][col - 2] == '-') {
-            moves.add(new Move(peg, new Location(row, col - 2)));
-        }
-        if (row < board.length - 2 && board[row + 1][col] != '.' && board[row + 2][col] == '-') {
-            moves.add(new Move(peg, new Location(row + 2, col)));
-        }
-        if (row > 1 && board[row - 1][col] != '.' && board[row - 2][col] == '-') {
-            moves.add(new Move(peg, new Location(row - 2, col)));
-        }
-    
-        return moves;
-    }
-    
-    
-    @Override
-public void makeMove(Move move) throws PegGameException {
-    Location from = move.getFrom();
-    Location to = move.getTo();
-
-    if (!isValidMove(from, to)) {
-        throw new PegGameException("Invalid move!");
-    }
-
-    board[from.getRow()][from.getCol()] = '-';
-    board[to.getRow()][to.getCol()] = currentPlayer;
-
-    int jumpedRow = (from.getRow() + to.getRow()) / 2;
-    int jumpedCol = (from.getCol() + to.getCol()) / 2;
-    board[jumpedRow][jumpedCol] = '-';
-}
 
 
-    private boolean isValidMove(Location from, Location to) {
-        int row = from.getRow();
-        int col = from.getCol();
     
-        if (!from.equals(to) || board[row][col] != currentPlayer || board[to.getRow()][to.getCol()] != '-') {
-            return false;
-        }
-    
-        int rowDiff = Math.abs(from.getRow() - to.getRow());
-        int colDiff = Math.abs(from.getCol() - to.getCol());
-    
-        // Check if the jump is diagonal or a single step
-        if (rowDiff != colDiff || rowDiff != 2) {
-            return false;
-        }
-    
-        // Check if the jumped peg exists
-        int jumpedRow = (from.getRow() + to.getRow()) / 2;
-        int jumpedCol = (from.getCol() + to.getCol()) / 2;
-        return board[jumpedRow][jumpedCol] == currentPlayer;
-    }
-    
-    @Override
-    public void switchPlayer() {
-        currentPlayer = (currentPlayer == 'o') ? 'O' : 'o';
-    }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (char[] row : board) {
-            for (char c : row) {
-                sb.append(c);
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == 1) {
+                    sb.append("o "); // represents a peg
+                } else if (board[i][j] == 0) {
+                    sb.append("- "); // represents an empty hole
+                } else {
+                    sb.append("  "); // represents a wall or occupied spot
+                }
             }
-            sb.append('\n');
+            sb.append("\n");
         }
         return sb.toString();
     }
     
-}
+
+
+
+    @Override
+    public Collection<move> getPossibleMoves() {
+        List<move> possibleMoves = new ArrayList<>();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == 1) { // Check if there's a peg at this position
+                    int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+                    for (int[] direction : directions) {
+                        int newRow = i + 2 * direction[0];
+                        int newCol = j + 2 * direction[1];
+                        if (newRow >= 0 && newRow < board.length && newCol >= 0 && newCol < board[i].length) {
+                            // Check if the destination cell is empty
+                            if (board[newRow][newCol] == 0) {
+                                possibleMoves.add(new move(new location(i, j), new location(newRow, newCol)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return possibleMoves;
+    }
     
+
+@Override
+public gamestate getgGamestate() {
+    int pegCount = 0;
+    for (int i = 0; i < board.length; i++) {
+        for (int j = 0; j < board[i].length; j++) {
+            if (board[i][j] == 1) {
+                pegCount++;
+            }
+        }
+    }
+
+    if (pegCount == 0) {
+        return gamestate.NOT_STARTED;
+    } else if (pegCount > 1 && getPossibleMoves().isEmpty()) {
+        return gamestate.STALMATE;
+    } else if (pegCount == 1) {
+        return gamestate.WON;
+    } else {
+        return gamestate.IN_PROGRESS;
+    }
+}
+
+
+
+
+
+
+    @Override
+public void makeMove(move move) throws PegGameException {
+    location from = move.getFrom();
+    location to = move.getTo();
+
+    if (board[from.getRow()][from.getCol()] != 1 || board[to.getRow()][to.getCol()] != 0) {
+        throw new PegGameException("Invalid move");
+    }
+
+    board[from.getRow()][from.getCol()] = 0; 
+    board[to.getRow()][to.getCol()] = 1; 
+
+}
+
+}

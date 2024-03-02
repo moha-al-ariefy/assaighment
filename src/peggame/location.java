@@ -1,34 +1,44 @@
-package peggame;
+ package peggame;
 
-public class Location {
-    private final int row;
-    private final int col;
+import java.util.Objects;
 
-    public Location(int row, int col) {
-        this.row = row;
-        this.col = col;
-    }
+import javax.print.DocFlavor.STRING;
 
-    public int getRow() {
-        return row;
-    }
+public class location {
+   private int row;
+   public int getRow() {
+    return row;
+}
 
-    public int getCol() {
-        return col;
+public int getCol() {
+    return col;
+}
+
+private int col; 
+    
+   public location(int row, int col){
+    this.row = row;
+    this.col = col;
+   }
+
+   public String toString(){
+    return "{row:"+row+", coluim:"+col+"}";
+   }
+
+       @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        location location = (location) obj;
+        return row == location.row && col == location.col;
     }
 
     @Override
-    public boolean equals(Object second) {
-        if (this == second) return true;
-        if (second == null || getClass() != second.getClass()) return false;
-
-        Location location = (Location) second;
-
-        return col == location.col && row == location.row;
-    }
-
-    @Override
-    public String toString() {
-        return "(" + col + ", " + row + ")";
+    public int hashCode() {
+        return Objects.hash(row, col);
     }
 }

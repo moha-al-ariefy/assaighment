@@ -1,8 +1,8 @@
 package peggame;
 
-public enum GameState {
+public enum gamestate {
     NOT_STARTED,
     IN_PROGRESS,
-    STALEMATE,
+    STALMATE,
     WON
 }
