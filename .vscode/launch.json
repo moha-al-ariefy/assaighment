@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Project1Main_java",
+            "request": "launch",
+            "mainClass": "peggame.Project1Main_java",
+            "projectName": "assaighment - Copy_9e9db4de"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

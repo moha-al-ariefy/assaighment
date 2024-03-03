@@ -6,7 +6,7 @@ import org.junit.Test;
 public class PegGameExceptionTest {
     @Test
     public void testPegGameException() {
-        String message = "This is a test exception.";
+        String message = "This is a test :) ";
         try {
             throw new PegGameException(message);
         } catch (PegGameException e) {

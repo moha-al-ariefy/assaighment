@@ -2,13 +2,13 @@ package peggame;
 
 import java.util.Collection;
 
-public interface PegGame {
+public interface PegGame { // the interface 
 
-    Collection<move> getPossibleMoves();
+    Collection<move> getPossibleMoves(); // this is a list of moves that could be used 
     
-    gamestate getgGamestate();
+    gamestate getgGamestate(); // geting the game state 
 
-    void makeMove(move move) throws PegGameException;
+    void makeMove(move move) throws PegGameException; // this using the move to move the peg in the board.
 
 
 } 
