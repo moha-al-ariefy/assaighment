@@ -65,7 +65,7 @@ public class CommandLineInterface {
     }
 
     public static void main(String[] args) {
-        PegGame game = new Zasquare(10); // here the game is created
+        PegGame game = new Zasquare(5); // here the game is created
         playGame(game);
     }
 }

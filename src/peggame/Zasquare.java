@@ -56,42 +56,45 @@ public class Zasquare implements PegGame {
     }
 
     @Override
-    public gamestate getgGamestate() {
-        int pegCount = 0;
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == 1) {
-                    pegCount++;
+    public gamestate getgGamestate() {// the method that return the game state.
+        int pegCount = 0; // making a varible to store the peg amount
+        for (int i = 0; i < board.length; i++) { // cheacking rows
+            for (int j = 0; j < board[i].length; j++) { // cheacking cols
+                if (board[i][j] == 1) { // 1 means theres a peg
+                    pegCount++; // rise the amount of pegs by now
                 }
             }
         }
 
-        if (pegCount == 0) {
-            return gamestate.NOT_STARTED;
-        } else if (pegCount > 1 && getPossibleMoves().isEmpty()) {
-            return gamestate.STALMATE;
-        } else if (pegCount == 1) {
-            return gamestate.WON;
+        if (pegCount == 0) { // if 0
+            return gamestate.NOT_STARTED; // game not started yet
+        } else if (pegCount > 1 && getPossibleMoves().isEmpty()) { // this if theres pegs and theres no posible move 
+            return gamestate.STALMATE;// the means the game ended(kinda means lost)
+        } else if (pegCount == 1) { // if theres exactly one peg
+            return gamestate.WON; // means won
         } else {
-            return gamestate.IN_PROGRESS;
+            return gamestate.IN_PROGRESS; // otherwise still in progress
         }
     }
 
     @Override
-    public void makeMove(move move) throws PegGameException {
-        location from = move.getFrom();
-        location to = move.getTo();
+    public void makeMove(move move) throws PegGameException {//here the make move !
+        location from = move.getFrom(); // a varible to store from
+        location to = move.getTo();// a varible to store to
 
-        if (board[from.getRow()][from.getCol()] != 1 || board[to.getRow()][to.getCol()] != 0) {
-            throw new PegGameException("Invalid move");
+        if (board[from.getRow()][from.getCol()] != 1 || board[to.getRow()][to.getCol()] != 0) {// cheacking the movment if its from a peg to a hole
+            throw new PegGameException("wrong move  :(  ");// if its not throw invalid move
         }
+        /*
+         * callculte the middle point and change it to a hole
+         * 
+         */
+        int zamoveRow = from.getRow() + (to.getRow() - from.getRow()) / 2; 
+        int zamoveCol = from.getCol() + (to.getCol() - from.getCol()) / 2;
+        board[zamoveRow][zamoveCol] = 0;
 
-        int jumpRow = from.getRow() + (to.getRow() - from.getRow()) / 2;
-        int jumpCol = from.getCol() + (to.getCol() - from.getCol()) / 2;
-        board[jumpRow][jumpCol] = 0;
-
-        board[from.getRow()][from.getCol()] = 0;
-        board[to.getRow()][to.getCol()] = 1;
+        board[from.getRow()][from.getCol()] = 0; // og point to 0 (hole)
+        board[to.getRow()][to.getCol()] = 1; // new point to1  (peg)
     }
 
 }
