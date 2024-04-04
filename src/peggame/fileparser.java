@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class fileparser { // here to meet the requirment of reading from a file 
-    public static PegGame parseFile(String filename) // the foucs method in this class. 
+    public static Zasquare parseFile(String filename) // the foucs method in this class. 
     throws IOException { /*ioexception is checked when theres an input output is failed
         this happens here when the reader is unable to read the file
         either its unreacheable or even nonextince 
