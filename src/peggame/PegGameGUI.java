@@ -117,9 +117,6 @@ public class PegGameGUI extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // Bind the size of the elements to the size of the scene
-        board.prefWidthProperty().bind(scene.widthProperty());
-        board.prefHeightProperty().bind(scene.heightProperty());
     }
     private void closeGame(Stage primaryStage) {
         // Close the game and the stage
