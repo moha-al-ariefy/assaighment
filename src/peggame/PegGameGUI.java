@@ -13,7 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import peggame.PegGameController;
+import peggame.pegcont;
 import peggame.Zasquare;
 
 import java.io.File;
@@ -26,7 +26,7 @@ public class PegGameGUI extends Application {
     private Zasquare game;
     GridPane board;
     private Label statusLabel;
-    private PegGameController controller;
+    private pegcont controller;
 
     Circle selectedPeg = null;
     int selectedRow = -1;
@@ -43,7 +43,7 @@ public class PegGameGUI extends Application {
         updateStatus();
 
         // Create the controller and connect it to the view
-        controller = new PegGameController(game, this);
+        controller = new pegcont(game, this);
 
         // Create the scene and show the stage
         createScene(primaryStage);

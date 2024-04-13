@@ -9,11 +9,11 @@ import peggame.location;
 import peggame.move;
 import peggame.PegGameGUI;
 
-public class PegGameController {
+public class pegcont {
     private Zasquare game;
     private PegGameGUI view;
 
-    public PegGameController(Zasquare game, PegGameGUI view) {
+    public pegcont(Zasquare game, PegGameGUI view) {
         this.game = game;
         this.view = view;
     }
