@@ -1,12 +1,17 @@
 package peggame;
 
-import java.io.File;
+import peggame.PegGame;
+import peggame.PegGameException;
+import peggame.location;
+import peggame.move;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+
 public class Zasquare implements PegGame {
-    int[][] board; // creating the board as a list (I tried many this was easily the easiest one.)
+    public int[][] board; // creating the board as a list (I tried many this was easily the easiest one.)
     private gamestate gameState;// for using the game state enums
 
     public Zasquare(int size) { // the constructor for creating the board frame and putting the defult game

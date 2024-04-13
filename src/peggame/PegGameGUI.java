@@ -9,42 +9,46 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import peggame.PegGameController;
+import peggame.Zasquare;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.Scanner;
 
 public class PegGameGUI extends Application {
     private Zasquare game;
-    private GridPane board;
+    GridPane board;
     private Label statusLabel;
+    private PegGameController controller;
 
-    private Circle selectedPeg = null;
-    private int selectedRow = -1;
-    private int selectedCol = -1;
-
+    Circle selectedPeg = null;
+    int selectedRow = -1;
+    int selectedCol = -1;
     @Override
     public void start(Stage primaryStage) {
         // Initialize the game
         initializeGame(primaryStage);
-    
+
         // Set up the game board
         setupBoard();
-    
+
         // Update the game status
         updateStatus();
-    
+
+        // Create the controller and connect it to the view
+        controller = new PegGameController(game, this);
+
         // Create the scene and show the stage
         createScene(primaryStage);
     }
+
     
 
     private void initializeGame(Stage primaryStage) {
@@ -142,6 +146,7 @@ public class PegGameGUI extends Application {
                     }
                 }
                 updateBoard();
+                updateGameState();
             } catch (FileNotFoundException e) {
                 showErrorDialog("Could not load game from file.");
             }
@@ -153,6 +158,7 @@ public class PegGameGUI extends Application {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
         File file = fileChooser.showSaveDialog(null);
+        updateGameState();
 
         if (file != null) {
             try (PrintWriter writer = new PrintWriter(file)) {
@@ -174,39 +180,15 @@ public class PegGameGUI extends Application {
         }
     }
 
-    private void showErrorDialog(String message) {
+    public void showErrorDialog(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
         alert.showAndWait();
     }
-
     private void handleMouseClick(int row, int col) {
-        if (selectedPeg == null) {
-            // Select a peg
-            if (game.board[row][col] == 1) {
-                selectedPeg = (Circle) getNodeByRowColumnIndex(row, col, board);
-                selectedRow = row;
-                selectedCol = col;
-                selectedPeg.setFill(Color.RED);
-            }
-        } else {
-            if (row == selectedRow && col == selectedCol) {
-                selectedPeg.setFill(Color.BLACK); // or whatever the original color was
-                selectedPeg = null;
-            } else {
-                try {
-                    game.makeMove(new move(new location(selectedRow, selectedCol), new location(row, col)));
-                    updateBoard();
-                    selectedPeg = null;
-                } catch (PegGameException e) {
-                    // Show an error dialog
-                    showErrorDialog("Invalid move.");
-                }
-            }
-        }
+        controller.handleMouseClick(row, col);
     }
-    
 
-    private void updateBoard() {
+    public void updateBoard() {
         for (int i = 0; i < game.board.length; i++) {
             for (int j = 0; j < game.board[i].length; j++) {
                 Circle circle = (Circle) getNodeByRowColumnIndex(i, j, board);
@@ -215,7 +197,7 @@ public class PegGameGUI extends Application {
         }
     }
 
-    private Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
+    public Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
         for (Node node : gridPane.getChildren()) {
             if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
                 return node;
@@ -224,7 +206,7 @@ public class PegGameGUI extends Application {
         return null;
     }
 
-    private void updateGameState() {
+    public void updateGameState() {
         gamestate currentState = game.getgGamestate();
         switch (currentState) {
             case NOT_STARTED:
