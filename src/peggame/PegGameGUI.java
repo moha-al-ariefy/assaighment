@@ -1,67 +1,182 @@
 package peggame;
 
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Scanner;
 
 public class PegGameGUI extends Application {
     private Zasquare game;
     private GridPane board;
+    private Label statusLabel;
+
     private Circle selectedPeg = null;
     private int selectedRow = -1;
     private int selectedCol = -1;
 
     @Override
     public void start(Stage primaryStage) {
-        // Create a file chooser
+        // Initialize the game
+        initializeGame(primaryStage);
+    
+        // Set up the game board
+        setupBoard();
+    
+        // Update the game status
+        updateStatus();
+    
+        // Create the scene and show the stage
+        createScene(primaryStage);
+    }
+    
+
+    private void initializeGame(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("C:/Users/ma980/Downloads/124/saves"));
         File file = fileChooser.showOpenDialog(primaryStage);
 
         if (file != null) {
             try {
-                // Parse the file to create a new game
                 game = (Zasquare) fileparser.parseFile(file.getPath());
-
-                // Create a new GridPane to represent the game board
-                board = new GridPane();
-
-                // Add pegs and holes to the board
-                for (int i = 0; i < game.board.length; i++) {
-                    for (int j = 0; j < game.board[i].length; j++) {
-                        Circle circle = new Circle(10);
-                        if (game.board[i][j] == 1) {
-                            circle.setFill(Color.BLACK);
-                        } else {
-                            circle.setFill(Color.WHITE);
-                        }
-                        final int finalI = i;
-                        final int finalJ = j;
-                        circle.setOnMouseClicked(event -> handleMouseClick(finalI, finalJ));
-                        board.add(circle, j, i);
-                    }
-                }
-                
-
-                // Create a new scene with the game board and set it on the stage
-                Scene scene = new Scene(board);
-                primaryStage.setScene(scene);
-                primaryStage.show();
             } catch (IOException e) {
-                // Show an error dialog
-                Alert alert = new Alert(AlertType.ERROR, "Could not load game from file.");
-                alert.showAndWait();
+                showErrorDialog("Could not load game from file.");
             }
         }
+    }
+    private void updateStatus() {
+        if (statusLabel == null) {
+            statusLabel = new Label();
+        }
+        statusLabel.setText("Game Status: " + game.getgGamestate());
+    }
+    private void setupBoard() {
+        board = new GridPane();
+
+        for (int i = 0; i < game.board.length; i++) {
+            for (int j = 0; j < game.board[i].length; j++) {
+                Circle circle = createCircle(i, j);
+                board.add(circle, j, i);
+            }
+        }
+    }
+
+    private Circle createCircle(int row, int col) {
+        Circle circle = new Circle(20);
+        circle.setFill(game.board[row][col] == 1 ? Color.BLACK : Color.GRAY);
+        circle.setOnMouseClicked(event -> handleMouseClick(row, col));
+        return circle;
+    }
+
+    private void createScene(Stage primaryStage) {
+        // Use a BorderPane as the root node
+        BorderPane root = new BorderPane();
+
+        // Create the Load Game, Save Game, and Close buttons
+        Button loadButton = new Button("Load Game");
+        loadButton.setOnAction(event -> loadGame());
+        Button saveButton = new Button("Save Game");
+        saveButton.setOnAction(event -> saveGame());
+        Button closeButton = new Button("Close");
+        closeButton.setOnAction(event -> closeGame(primaryStage));
+        // Create the game state box
+        HBox gameStateBox = new HBox(statusLabel);
+        gameStateBox.setSpacing(10);
+
+        // Create the button box
+        HBox buttonBox = new HBox(loadButton, saveButton, closeButton);
+    buttonBox.setSpacing(30);
+
+
+        // Add the board, game state box, and button box to the BorderPane
+        root.setCenter(board);
+        root.setTop(gameStateBox);
+        root.setBottom(buttonBox);
+
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        // Bind the size of the elements to the size of the scene
+        board.prefWidthProperty().bind(scene.widthProperty());
+        board.prefHeightProperty().bind(scene.heightProperty());
+    }
+    private void closeGame(Stage primaryStage) {
+        // Close the game and the stage
+        primaryStage.close();
+    }
+    
+    private void loadGame() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        File file = fileChooser.showOpenDialog(null);
+
+        if (file != null) {
+            try (Scanner scanner = new Scanner(file)) {
+                int size = scanner.nextInt();
+                scanner.nextLine();  // Consume newline
+
+                game.board = new int[size][size];
+
+                for (int i = 0; i < size; i++) {
+                    String line = scanner.nextLine();
+                    for (int j = 0; j < size; j++) {
+                        game.board[i][j] = line.charAt(j) == 'o' ? 1 : 0;
+                    }
+                }
+                updateBoard();
+            } catch (FileNotFoundException e) {
+                showErrorDialog("Could not load game from file.");
+            }
+        }
+    }
+
+    private void saveGame() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            try (PrintWriter writer = new PrintWriter(file)) {
+                writer.println(game.board.length);
+
+                for (int i = 0; i < game.board.length; i++) {
+                    for (int j = 0; j < game.board[i].length; j++) {
+                        if (game.board[i][j] == 1) {
+                            writer.print("o");
+                        } else {
+                            writer.print(".");
+                        }
+                    }
+                    writer.println();
+                }
+            } catch (FileNotFoundException e) {
+                showErrorDialog("Could not save game to file.");
+            }
+        }
+    }
+
+    private void showErrorDialog(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, message);
+        alert.showAndWait();
     }
 
     private void handleMouseClick(int row, int col) {
@@ -74,41 +189,57 @@ public class PegGameGUI extends Application {
                 selectedPeg.setFill(Color.RED);
             }
         } else {
-            // Move the selected peg
-            try {
-                game.makeMove(new move(new location(selectedRow, selectedCol), new location(row, col)));
-                updateBoard();
+            if (row == selectedRow && col == selectedCol) {
+                selectedPeg.setFill(Color.BLACK); // or whatever the original color was
                 selectedPeg = null;
-            } catch (PegGameException e) {
-                // Show an error dialog
-                Alert alert = new Alert(AlertType.ERROR, "Invalid move.");
-                alert.showAndWait();
+            } else {
+                try {
+                    game.makeMove(new move(new location(selectedRow, selectedCol), new location(row, col)));
+                    updateBoard();
+                    selectedPeg = null;
+                } catch (PegGameException e) {
+                    // Show an error dialog
+                    showErrorDialog("Invalid move.");
+                }
             }
         }
     }
+    
 
     private void updateBoard() {
         for (int i = 0; i < game.board.length; i++) {
             for (int j = 0; j < game.board[i].length; j++) {
                 Circle circle = (Circle) getNodeByRowColumnIndex(i, j, board);
-                if (game.board[i][j] == 1) {
-                    circle.setFill(Color.BLACK);
-                } else {
-                    circle.setFill(Color.WHITE);
-                }
+                circle.setFill(game.board[i][j] == 1 ? Color.BLACK : Color.GRAY);
             }
         }
     }
 
-    private javafx.scene.Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
-        javafx.scene.Node result = null;
-        for (javafx.scene.Node node : gridPane.getChildren()) {
-            if(GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
-                result = node;
-                break;
+    private Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
+        for (Node node : gridPane.getChildren()) {
+            if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == column) {
+                return node;
             }
         }
-        return result;
+        return null;
+    }
+
+    private void updateGameState() {
+        gamestate currentState = game.getgGamestate();
+        switch (currentState) {
+            case NOT_STARTED:
+                statusLabel.setText("Game Status: Not Started");
+                break;
+            case IN_PROGRESS:
+                statusLabel.setText("Game Status: In Progress");
+                break;
+            case STALMATE:
+                statusLabel.setText("Game Status: Stalemate");
+                break;
+            case WON:
+                statusLabel.setText("Game Status: Won");
+                break;
+        }
     }
 
     public static void main(String[] args) {

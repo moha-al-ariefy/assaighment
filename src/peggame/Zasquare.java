@@ -78,23 +78,27 @@ public class Zasquare implements PegGame {
     }
 
     @Override
-    public void makeMove(move move) throws PegGameException {//here the make move !
-        location from = move.getFrom(); // a varible to store from
-        location to = move.getTo();// a varible to store to
-
-        if (board[from.getRow()][from.getCol()] != 1 || board[to.getRow()][to.getCol()] != 0) {// cheacking the movment if its from a peg to a hole
-            throw new PegGameException("wrong move  :(  ");// if its not throw invalid move
+    public void makeMove(move move) throws PegGameException {
+        location from = move.getFrom(); // a variable to store from
+        location to = move.getTo(); // a variable to store to
+    
+        int distance = Math.abs(from.getRow() - to.getRow()) + Math.abs(from.getCol() - to.getCol());
+    
+        // Check if the move is more than 2 spaces
+        if (distance > 2) {
+            throw new PegGameException("Invalid move: Move is more than 2 spaces.");
         }
-        /*
-         * callculte the middle point and change it to a hole
-         * 
-         */
-        int zamoveRow = from.getRow() + (to.getRow() - from.getRow()) / 2; 
-        int zamoveCol = from.getCol() + (to.getCol() - from.getCol()) / 2;
-        board[zamoveRow][zamoveCol] = 0;
-
-        board[from.getRow()][from.getCol()] = 0; // og point to 0 (hole)
-        board[to.getRow()][to.getCol()] = 1; // new point to1  (peg)
+    
+        if (board[from.getRow()][from.getCol()] != 1 || board[to.getRow()][to.getCol()] != 0) {
+            throw new PegGameException("Invalid move: Must move from a peg to a hole.");
+        }
+    
+        int middleRow = from.getRow() + (to.getRow() - from.getRow()) / 2;
+        int middleCol = from.getCol() + (to.getCol() - from.getCol()) / 2;
+        board[middleRow][middleCol] = 0;
+    
+        board[from.getRow()][from.getCol()] = 0; // original point to 0 (hole)
+        board[to.getRow()][to.getCol()] = 1; // new point to 1 (peg)
     }
-
+    
 }
