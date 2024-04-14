@@ -7,19 +7,25 @@ import javafx.scene.shape.Circle;
 import peggame.PegGameException;
 import peggame.location;
 import peggame.move;
-import peggame.PegGameGUI;
+import peggame.pggui;
 
 public class pegcont {
     private Zasquare game;
-    private PegGameGUI view;
-
-    public pegcont(Zasquare game, PegGameGUI view) {
+    private pggui view;
+    /**
+    * This class represents the controller for the peg game.
+    *  It handles user interactions and updates the game state and view accordingly.
+    */
+    public pegcont(Zasquare game, pggui view) {
         this.game = game;
         this.view = view;
     }
 
 
-
+    /**
+     * This method handles mouse clicks on the game board.
+     * It selects and deselects pegs, makes moves, and updates the game state and view.
+     */
     public void handleMouseClick(int row, int col) {
         if (view.selectedPeg == null) {
             // Select a peg
